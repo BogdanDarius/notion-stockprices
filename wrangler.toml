@@ -1,0 +1,11 @@
+name = "notion-stockprices"
+type = "javascript"
+
+account_id = ""
+workers_dev = true
+compatibility_date = "2022-04-07"
+
+[vars]
+NOTION_TOKEN = ""
+NOTION_DATABASE_ID = ""
+FINNHUB_TOKEN = ""

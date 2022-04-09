@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "notion-stockprices",
+  "version": "1.0.0",
+  "description": "Update notion portfolio stock prices",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write '**/*.{js,css,json,md}'"
+  },
+  "author": "Bogdan Darius",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.6.2"
+  }
+}
