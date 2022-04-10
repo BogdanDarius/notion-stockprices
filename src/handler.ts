@@ -3,40 +3,28 @@ import { List } from 'notion-api-types/endpoints/global';
 import type { Page, PageProperties } from 'notion-api-types/responses';
 
 /**
- * Retrieve id for all pages that are stored in database
- * @returns Promise with ids
+ * Retrieve all pages that are stored in database
+ * @returns Promise with list of pages
  */
-async function getPagesId(): Promise<string[]> {
+async function getPages(): Promise<List<Page>> {
   const dbQuery: Response = await fetch(`${NOTION_API}/databases/${NOTION_DATABASE_ID}/query`, {
     headers: new Headers(NOTION_HEADERS),
     method: 'POST',
   });
   const pages: List<Page> = await dbQuery.json();
-  const ids: string[] = [];
-  for (let i = 0; i < pages.results.length; i++) {
-    ids.push(pages.results[i].id);
-  }
-  return ids;
+  return pages;
 }
 
 /**
- * Set ticker current price for every page
- * @returns Promise with pages
+ * Update ticker current price for every page
+ * @returns Promise with void
  */
-async function setTickersPrice(): Promise<Page[]> {
-  const pagesId: string[] = await getPagesId();
-  const pages: Page[] = await Promise.all(
-    pagesId.map(async (id: string) => {
-      const fetchPage: Response = await fetch(`${NOTION_API}/pages/${id}`, {
-        headers: new Headers(NOTION_HEADERS),
-        method: 'GET',
-      });
-      const page: Page = await fetchPage.json();
-      return page;
-    }),
-  );
+async function updateTickersPrice(): Promise<void> {
+  // Retrieve pages
+  const pages: List<Page> = await getPages();
+  // Set new prices
   await Promise.all(
-    pages.map(async (page: Page) => {
+    pages.results.map(async (page: Page) => {
       const ticker: string = (page.properties.Ticker as PageProperties.Title).title[0].text.content;
       const fetchPrice: Response = await fetch(`${FINNHUB_API}/quote?symbol=${ticker}`, {
         method: 'GET',
@@ -48,23 +36,16 @@ async function setTickersPrice(): Promise<Page[]> {
       }
     }),
   );
-  return pages;
-}
-
-/**
- * Update ticker current price for every page
- * @returns Promise with void
- */
-async function updateTickersPrice(): Promise<void> {
-  const pages: Page[] = await setTickersPrice();
+  // Update prices on notion
   await Promise.all(
-    pages.map(async (page: Page) => {
-      await fetch(`${NOTION_API}/pages/${page.id}`, {
-        headers: new Headers(NOTION_HEADERS),
-        method: 'PATCH',
-        body: JSON.stringify({ properties: { Price: page.properties.Price } }),
-      });
-    }),
+    pages.results.map(
+      async (page: Page) =>
+        await fetch(`${NOTION_API}/pages/${page.id}`, {
+          headers: new Headers(NOTION_HEADERS),
+          method: 'PATCH',
+          body: JSON.stringify({ properties: { Price: page.properties.Price } }),
+        }),
+    ),
   );
 }
 
