@@ -1,5 +1,3 @@
-import { handleRequest } from './handler';
+import { triggerEvent } from './handler';
 
-addEventListener('fetch', (event) => {
-  event.respondWith(handleRequest());
-});
+addEventListener('scheduled', (event) => event.waitUntil(triggerEvent()));

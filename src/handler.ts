@@ -51,11 +51,12 @@ async function updateTickersPrice(): Promise<void> {
 
 /**
  * Tracks worker execution time
- * @returns promise with response message
+ * A cronjob triggers update tickers price
+ * @returns Promise with void
  */
-export async function handleRequest(): Promise<Response> {
+export async function triggerEvent(): Promise<void> {
   const start: number = new Date().getTime();
   await updateTickersPrice();
   const elapsed: number = new Date().getTime() - start;
-  return new Response(`finished tickers price update in ${elapsed} milliseconds`);
+  console.log(`finished tickers price update in ${elapsed} milliseconds`);
 }

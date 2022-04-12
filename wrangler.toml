@@ -15,3 +15,6 @@ format = "service-worker"
 NOTION_TOKEN = ""
 NOTION_DATABASE_ID = ""
 FINNHUB_TOKEN = ""
+
+[triggers]
+crons = ["*/15 14-20 * * 2-6"]
