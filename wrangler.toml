@@ -17,4 +17,4 @@ NOTION_DATABASE_ID = ""
 FINNHUB_TOKEN = ""
 
 [triggers]
-crons = ["*/15 14-20 * * 2-6"]
+crons = ["*/15 13-19 * * 2-6"]
